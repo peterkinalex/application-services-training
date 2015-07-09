@@ -8,6 +8,11 @@
             "SymfonyStandard\\": "app/SymfonyStandard/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "": "tests/"
+        }
+    },
     "require": {
         "php": ">=5.3.9",
         "symfony/symfony": "2.7.*",
@@ -19,7 +24,10 @@
         "symfony/monolog-bundle": "~2.4",
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
-        "incenteev/composer-parameter-handler": "~2.0"
+        "incenteev/composer-parameter-handler": "~2.0",
+        "stack/builder": "^1.0",
+        "stack/run": "^1.0",
+        "stack/lazy-http-kernel": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

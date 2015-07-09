@@ -1,0 +1,28 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+<h1>Álbums</h1>
+{% for flashMessage in app.session.flashbag.get('notice') %}
+<div class="alert alert-info">
+    {{ flashMessage }}
+</div>
+{% endfor %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>TITLE</th>
+            <th>ARTIST ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for album in albums %}
+        <tr>
+            <td>{{ album.id }}</td>
+            <td>{{ album.title }}</td>
+            <td>{{ album.artistId }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
