@@ -28,4 +28,14 @@ class DoctrineAlbumRepository implements AlbumRepository
         $this->em->persist($anAlbum);
         $this->em->flush($anAlbum);
     }
+
+    /**
+     * @param int $id
+     *
+     * @return Album
+     */
+    public function ofId($id)
+    {
+        return $this->em->find('DigitalMedia:Album\Album', $id);
+    }
 }

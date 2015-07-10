@@ -94,4 +94,9 @@ class Album
     {
         $this->artistId = $artistId;
     }
+
+    public function changeTitleFor($title)
+    {
+        $this->title = $title;
+    }
 }

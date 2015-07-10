@@ -23,4 +23,11 @@ class AlbumApplicationService
             new Album($title, $artistId)
         );
     }
+
+    public function changeName($id, $newName)
+    {
+        $album = $this->albumRepository->ofId($id);
+
+        $album->changeTitleFor($newName);
+    }
 }

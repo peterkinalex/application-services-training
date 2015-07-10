@@ -79,3 +79,20 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+tactician:
+    commandbus:
+        default:
+            middleware:
+                - tactician.middleware.locking
+                - tactician.middleware.command_handler
+
+        transactional:
+            middleware:
+                - tactician.middleware.locking
+                - tactician.middleware.doctrine
+                - tactician.middleware.command_handler
+
+        queued:
+            middleware:
+                - tactician.middleware.bernard

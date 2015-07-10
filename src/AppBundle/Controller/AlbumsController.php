@@ -22,7 +22,7 @@ class AlbumsController extends Controller
     /**
      * @Route("/albums/create")
      */
-    public function createAction(Request $request)
+    public function createAction()
     {
         $title = 'Album test';
         $artistId = 1;
@@ -32,6 +32,26 @@ class AlbumsController extends Controller
         $this->addFlash(
             'notice',
             'Album created successfully!'
+        );
+
+        return $this->redirectToRoute('app_albums_index');
+    }
+
+    /**
+     * @Route("/albums/update")
+     */
+    public function updateAction()
+    {
+        $album = 348;
+        $newTitle = 'Updated title';
+
+        $this->get('album_application_service')->changeName($album, $newTitle);
+
+        $this->getDoctrine()->getManager()->flush();
+
+        $this->addFlash(
+            'notice',
+            'Album updated successfully!'
         );
 
         return $this->redirectToRoute('app_albums_index');

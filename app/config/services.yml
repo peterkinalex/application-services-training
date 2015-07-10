@@ -4,6 +4,88 @@ parameters:
 #    parameter_name: value
 
 services:
+    predis:
+        class: Predis\Client
+        arguments:
+            - { prefix: "bernard:" }
+
+    bernard.driver:
+        class: Bernard\Driver\PredisDriver
+        arguments:
+            - @predis
+
+    normalt.envelope_normalizer:
+        class: Bernard\Normalizer\EnvelopeNormalizer
+
+    normalt.default_message_normalizer:
+        class: Bernard\Normalizer\DefaultMessageNormalizer
+
+    symfony.serializer.object_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+
+    bernard.serializer.aggregate_normalizer:
+        class: Normalt\Normalizer\AggregateNormalizer
+        arguments:
+            - [@normalt.envelope_normalizer, @normalt.default_message_normalizer, @symfony.serializer.object_normalizer]
+
+    bernard.serializer:
+        class: Bernard\Serializer
+        arguments:
+            - @bernard.serializer.aggregate_normalizer
+
+    bernard.persistent_factory:
+        class: Bernard\QueueFactory\PersistentFactory
+        arguments:
+            - @bernard.driver
+            - @bernard.serializer
+
+    bernard.event_listener.error_log_subscriber:
+        class: Bernard\EventListener\ErrorLogSubscriber
+        tags:
+            - { name: kernel.event_subscriber }
+
+    bernard.event_listener.failure_subscriber:
+        class: Bernard\EventListener\FailureSubscriber
+        arguments:
+            - @bernard.persistent_factory
+        tags:
+            - { name: kernel.event_subscriber }
+
+    bernard.producer:
+        class: Bernard\Producer
+        arguments:
+            - @bernard.persistent_factory
+            - @event_dispatcher
+
+    bernard.command.consume_command:
+        class: Bernard\Command\ConsumeCommand
+        arguments:
+            - @bernard.consumer
+            - @bernard.persistent_factory
+        tags:
+            - { name: console.command }
+
+    tactician.middleware.bernard:
+        class: League\Tactician\Bernard\QueueMiddleware
+        arguments:
+            - @bernard.producer
+
+    tactician.separate_bus_receiver:
+        class: League\Tactician\Bernard\Receiver\SeparateBusReceiver
+        arguments:
+            - @tactician.commandbus.transactional
+
+    bernard.router:
+        class: Bernard\Router\SimpleRouter
+        calls:
+            - [add, ["League\Tactician\Bernard\QueueableCommand", @tactician.separate_bus_receiver]]
+
+    bernard.consumer:
+        class: Bernard\Consumer
+        arguments:
+            - @bernard.router
+            - @event_dispatcher
+
     album_repository:
         class: AppBundle\Infrastructure\Persistence\DoctrineAlbumRepository
         arguments:
