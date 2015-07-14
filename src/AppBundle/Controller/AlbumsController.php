@@ -2,6 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use Chinook\DigitalMedia\Application\Album\ChangeNameCommand;
+use Chinook\DigitalMedia\Application\Album\CreateAlbumCommand;
+use Chinook\DigitalMedia\Application\Album\DeleteAlbumCommand;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,6 +15,7 @@ class AlbumsController extends Controller
     /**
      * @Route("/")
      * @Route("/albums")
+     * @Method("GET")
      */
     public function indexAction()
     {
@@ -20,38 +25,52 @@ class AlbumsController extends Controller
     }
 
     /**
-     * @Route("/albums/create")
+     * @Route("/albums")
+     * @Method("POST")
      */
-    public function createAction()
+    public function createAction(Request $request)
     {
-        $title = 'Album test';
-        $artistId = 1;
-
-        $this->get('album_application_service')->createAlbum($title, $artistId);
-
-        $this->addFlash(
-            'notice',
-            'Album created successfully!'
+        $this->get('tactician.commandbus.transactional')->handle(
+            new CreateAlbumCommand(
+                $request->request->get('title'),
+                $request->request->get('artist_id')
+            )
         );
 
+        $this->addFlash('notice', 'Album created successfully!');
         return $this->redirectToRoute('app_albums_index');
     }
 
     /**
-     * @Route("/albums/update")
+     * @Route("/albums/{id}")
+     * @Method("DELETE")
      */
-    public function updateAction()
+    public function removeAction($id)
     {
-        $album = 348;
-        $newTitle = 'Updated title';
+        $this->get('tactician.commandbus.transactional')->handle(
+            new DeleteAlbumCommand($id)
+        );
 
-        $this->get('album_application_service')->changeName($album, $newTitle);
+        $this->addFlash('notice', 'Album removed successfully!');
+        return $this->redirectToRoute('app_albums_index');
+    }
 
-        $this->getDoctrine()->getManager()->flush();
+    /**
+     * @Route("/albums/{id}")
+     * @Method("PUT")
+     */
+    public function updateAction($id, Request $request)
+    {
+        $this->get('tactician.commandbus.queued')->handle(
+            new ChangeNameCommand(
+                $id,
+                $request->request->get('title')
+            )
+        );
 
         $this->addFlash(
             'notice',
-            'Album updated successfully!'
+            'The album update has been queued successfully!'
         );
 
         return $this->redirectToRoute('app_albums_index');

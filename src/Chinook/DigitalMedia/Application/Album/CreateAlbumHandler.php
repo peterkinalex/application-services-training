@@ -5,7 +5,7 @@ namespace Chinook\DigitalMedia\Application\Album;
 use Chinook\DigitalMedia\DomainModel\Album\Album;
 use Chinook\DigitalMedia\DomainModel\Album\AlbumRepository;
 
-class AlbumApplicationService
+class CreateAlbumHandler
 {
     /**
      * @var AlbumRepository
@@ -17,17 +17,10 @@ class AlbumApplicationService
         $this->albumRepository = $albumRepository;
     }
 
-    public function createAlbum($title, $artistId)
+    public function handle(CreateAlbumCommand $command)
     {
         $this->albumRepository->add(
-            new Album($title, $artistId)
+            new Album($command->getTitle(), $command->getArtistId())
         );
-    }
-
-    public function changeName($id, $newName)
-    {
-        $album = $this->albumRepository->ofId($id);
-
-        $album->changeTitleFor($newName);
     }
 }

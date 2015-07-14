@@ -26,7 +26,6 @@ class DoctrineAlbumRepository implements AlbumRepository
     public function add(Album $anAlbum)
     {
         $this->em->persist($anAlbum);
-        $this->em->flush($anAlbum);
     }
 
     /**
@@ -37,5 +36,13 @@ class DoctrineAlbumRepository implements AlbumRepository
     public function ofId($id)
     {
         return $this->em->find('DigitalMedia:Album\Album', $id);
+    }
+
+    /**
+     * @param Album $album
+     */
+    public function remove($album)
+    {
+        $this->em->remove($album);
     }
 }

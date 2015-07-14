@@ -12,4 +12,9 @@ interface AlbumRepository
      * @return Album
      */
     public function ofId($id);
+
+    /**
+     * @param Album $album
+     */
+    public function remove($album);
 }

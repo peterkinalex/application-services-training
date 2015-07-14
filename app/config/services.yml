@@ -91,7 +91,23 @@ services:
         arguments:
             - @doctrine.orm.entity_manager
 
-    album_application_service:
-        class: Chinook\DigitalMedia\Application\Album\AlbumApplicationService
+    create_album_handler:
+        class: Chinook\DigitalMedia\Application\Album\CreateAlbumHandler
         arguments:
             - @album_repository
+        tags:
+            - { name: tactician.handler, command: Chinook\DigitalMedia\Application\Album\CreateAlbumCommand }
+
+    change_album_name_handler:
+        class: Chinook\DigitalMedia\Application\Album\ChangeNameHandler
+        arguments:
+            - @album_repository
+        tags:
+            - { name: tactician.handler, command: Chinook\DigitalMedia\Application\Album\ChangeNameCommand }
+
+    remove_album_handler:
+        class: Chinook\DigitalMedia\Application\Album\DeleteAlbumHandler
+        arguments:
+            - @album_repository
+        tags:
+            - { name: tactician.handler, command: Chinook\DigitalMedia\Application\Album\DeleteAlbumCommand }
